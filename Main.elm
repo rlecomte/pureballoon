@@ -9,6 +9,7 @@ import Html.App as Html
 import List exposing (filter, map, concatMap)
 import Date
 import Random
+import Model exposing(grid,Cell)
 
 (=>) : a -> b -> (a, b)
 (=>) = (,)
@@ -47,28 +48,24 @@ view model =
     ]
   ]
 
-circleGenerator: Float -> Float -> Task a Collage.Form
-circleGenerator x y = Date.now
-  |> Task.map(Date.millisecond)
-  |> Task.map(Random.initialSeed)
-  |> Task.map(Random.step (Random.int 0 3))
-  |> Task.map(\(i,_) -> randomColor(i))
-  |> Task.map(\c -> Collage.filled c (Collage.circle 20))
-  |> Task.map(\s -> Collage.move (x,y) s)
+generateCircle: Cell -> Collage.Form
+generateCircle cell = circleGenerator cell.caseType (toFloat ((cell.row * 50) + 25 - 175)) (toFloat ((cell.column * 50) + 25 - 200))
+
+circleGenerator: Int -> Float -> Float -> Collage.Form
+circleGenerator i x y = Collage.filled (randomColor i) (Collage.circle 20)
+  |> Collage.move (x,y)
 
 randomColor: Int -> Color
 randomColor i =
   case i of
-    3 -> Color.blue
-    4 -> Color.red
-    5 -> Color.green
-    6 -> Color.black
+    1 -> Color.blue
+    2 -> Color.red
+    3 -> Color.green
+    4 -> Color.black
     _ -> Color.charcoal
 
-renderPoint =
-  let xs = filter (\x -> x % 50 == 0) [0..300] |> map(\x -> x + 25) |> map(\x -> toFloat(x - 175))
-      ys = filter (\x -> x % 50 == 0) [0..400] |> map(\x -> x + 25) |> map(\x -> toFloat(x - 200))
-  in Task.sequence(concatMap(\x -> map(\y -> circleGenerator x y) ys) xs)
+renderPoint = Model.grid |> Task.map(List.map(generateCircle))
+
 --7x9
 renderWell model = model
   |> Collage.collage (700) (900)

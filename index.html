@@ -11406,6 +11406,43 @@ var _evancz$elm_graphics$Collage$ngon = F2(
 				f,
 				_elm_lang$core$Native_List.range(0, m - 1)));
 	});
+var _user$project$Model$randomInts = F2(
+	function (n, seed) {
+		var _p0 = A2(
+			_elm_lang$core$Random$step,
+			A2(_elm_lang$core$Random$int, 0, 5),
+			seed);
+		var x = _p0._0;
+		var s = _p0._1;
+		return (_elm_lang$core$Native_Utils.cmp(n, 0) > 0) ? A2(
+			_elm_lang$core$List_ops['::'],
+			x,
+			A2(_user$project$Model$randomInts, n - 1, s)) : _elm_lang$core$Native_List.fromArray(
+			[]);
+	});
+var _user$project$Model$initSeed = A2(
+	_elm_lang$core$Task$map,
+	_elm_lang$core$Random$initialSeed,
+	A2(_elm_lang$core$Task$map, _elm_lang$core$Date$millisecond, _elm_lang$core$Date$now));
+var _user$project$Model$grid = A2(
+	_elm_lang$core$Task$map,
+	_elm_lang$core$List$indexedMap(
+		F2(
+			function (i, r) {
+				return {
+					row: A2(_elm_lang$core$Basics_ops['%'], i, 7),
+					column: A2(_elm_lang$core$Basics_ops['%'], i, 9),
+					caseType: r
+				};
+			})),
+	A2(
+		_elm_lang$core$Task$map,
+		_user$project$Model$randomInts(63),
+		_user$project$Model$initSeed));
+var _user$project$Model$Cell = F3(
+	function (a, b, c) {
+		return {row: a, column: b, caseType: c};
+	});
 var _user$project$Main$renderWell = function (model) {
 	return _evancz$elm_graphics$Element$toHtml(
 		A3(_evancz$elm_graphics$Collage$collage, 700, 900, model));
@@ -11413,101 +11450,39 @@ var _user$project$Main$renderWell = function (model) {
 var _user$project$Main$randomColor = function (i) {
 	var _p0 = i;
 	switch (_p0) {
-		case 3:
+		case 1:
 			return _elm_lang$core$Color$blue;
-		case 4:
+		case 2:
 			return _elm_lang$core$Color$red;
-		case 5:
+		case 3:
 			return _elm_lang$core$Color$green;
-		case 6:
+		case 4:
 			return _elm_lang$core$Color$black;
 		default:
 			return _elm_lang$core$Color$charcoal;
 	}
 };
-var _user$project$Main$circleGenerator = F2(
-	function (x, y) {
+var _user$project$Main$circleGenerator = F3(
+	function (i, x, y) {
 		return A2(
-			_elm_lang$core$Task$map,
-			function (s) {
-				return A2(
-					_evancz$elm_graphics$Collage$move,
-					{ctor: '_Tuple2', _0: x, _1: y},
-					s);
-			},
+			_evancz$elm_graphics$Collage$move,
+			{ctor: '_Tuple2', _0: x, _1: y},
 			A2(
-				_elm_lang$core$Task$map,
-				function (c) {
-					return A2(
-						_evancz$elm_graphics$Collage$filled,
-						c,
-						_evancz$elm_graphics$Collage$circle(20));
-				},
-				A2(
-					_elm_lang$core$Task$map,
-					function (_p1) {
-						var _p2 = _p1;
-						return _user$project$Main$randomColor(_p2._0);
-					},
-					A2(
-						_elm_lang$core$Task$map,
-						_elm_lang$core$Random$step(
-							A2(_elm_lang$core$Random$int, 0, 3)),
-						A2(
-							_elm_lang$core$Task$map,
-							_elm_lang$core$Random$initialSeed,
-							A2(_elm_lang$core$Task$map, _elm_lang$core$Date$millisecond, _elm_lang$core$Date$now))))));
+				_evancz$elm_graphics$Collage$filled,
+				_user$project$Main$randomColor(i),
+				_evancz$elm_graphics$Collage$circle(20)));
 	});
-var _user$project$Main$renderPoint = function () {
-	var ys = A2(
-		_elm_lang$core$List$map,
-		function (x) {
-			return _elm_lang$core$Basics$toFloat(x - 200);
-		},
-		A2(
-			_elm_lang$core$List$map,
-			function (x) {
-				return x + 25;
-			},
-			A2(
-				_elm_lang$core$List$filter,
-				function (x) {
-					return _elm_lang$core$Native_Utils.eq(
-						A2(_elm_lang$core$Basics_ops['%'], x, 50),
-						0);
-				},
-				_elm_lang$core$Native_List.range(0, 400))));
-	var xs = A2(
-		_elm_lang$core$List$map,
-		function (x) {
-			return _elm_lang$core$Basics$toFloat(x - 175);
-		},
-		A2(
-			_elm_lang$core$List$map,
-			function (x) {
-				return x + 25;
-			},
-			A2(
-				_elm_lang$core$List$filter,
-				function (x) {
-					return _elm_lang$core$Native_Utils.eq(
-						A2(_elm_lang$core$Basics_ops['%'], x, 50),
-						0);
-				},
-				_elm_lang$core$Native_List.range(0, 300))));
-	return _elm_lang$core$Task$sequence(
-		A2(
-			_elm_lang$core$List$concatMap,
-			function (x) {
-				return A2(
-					_elm_lang$core$List$map,
-					function (y) {
-						return A2(_user$project$Main$circleGenerator, x, y);
-					},
-					ys);
-			},
-			xs));
-}();
+var _user$project$Main$generateCircle = function (cell) {
+	return A3(
+		_user$project$Main$circleGenerator,
+		cell.caseType,
+		_elm_lang$core$Basics$toFloat(((cell.row * 50) + 25) - 175),
+		_elm_lang$core$Basics$toFloat(((cell.column * 50) + 25) - 200));
+};
+var _user$project$Main$renderPoint = A2(
+	_elm_lang$core$Task$map,
+	_elm_lang$core$List$map(_user$project$Main$generateCircle),
+	_user$project$Model$grid);
 var _user$project$Main_ops = _user$project$Main_ops || {};
 _user$project$Main_ops['=>'] = F2(
 	function (v0, v1) {
@@ -11558,8 +11533,8 @@ var _user$project$Main$renderCmd = A3(
 	_user$project$Main$renderPoint);
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p3 = msg;
-		switch (_p3.ctor) {
+		var _p1 = msg;
+		switch (_p1.ctor) {
 			case 'Init':
 				return {
 					ctor: '_Tuple2',
@@ -11568,7 +11543,7 @@ var _user$project$Main$update = F2(
 					_1: _user$project$Main$renderCmd
 				};
 			case 'RenderPointsSuccess':
-				return {ctor: '_Tuple2', _0: _p3._0, _1: _elm_lang$core$Platform_Cmd$none};
+				return {ctor: '_Tuple2', _0: _p1._0, _1: _elm_lang$core$Platform_Cmd$none};
 			default:
 				return {
 					ctor: '_Tuple2',
