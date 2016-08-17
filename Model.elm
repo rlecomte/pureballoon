@@ -17,7 +17,7 @@ initSeed = Date.now
 
 randomInts: Int -> Random.Seed -> List Int
 randomInts n seed =
-  let (x,s) = Random.step (Random.int 0 5) seed
+  let (x,s) = Random.step (Random.int 1 4) seed
   in if(n > 0) then x :: randomInts (n - 1) s else []
 
 grid: Task.Task a (List Cell)

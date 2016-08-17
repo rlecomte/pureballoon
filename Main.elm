@@ -61,7 +61,6 @@ randomColor i =
     1 -> Color.blue
     2 -> Color.red
     3 -> Color.green
-    4 -> Color.black
     _ -> Color.charcoal
 
 renderPoint = Model.grid |> Task.map(List.map(generateCircle))
