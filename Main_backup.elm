@@ -52,8 +52,7 @@ generateCircle: Cell -> Collage.Form
 generateCircle cell = circleGenerator cell.caseType (toFloat ((cell.row * 50) + 25 - 175)) (toFloat ((cell.column * 50) + 25 - 200))
 
 circleGenerator: Int -> Float -> Float -> Collage.Form
-circleGenerator i x y = Collage.filled (randomColor i) (Collage.circle 20)
-  |> Collage.move (x,y)
+circleGenerator i x y = Collage.filled (randomColor i) (Collage.circle 20) |> Collage.move (x,y)
 
 randomColor: Int -> Color
 randomColor i =
@@ -63,7 +62,10 @@ randomColor i =
     3 -> Color.green
     _ -> Color.charcoal
 
-renderPoint = Model.grid |> Task.map(List.map(generateCircle))
+
+foo = (Collage.traced Collage.defaultLine (Collage.segment (-100,100) (100,-100)))
+--Task.succeed ((Collage.traced Collage.defaultLine (Collage.segment (-100,100) (100,-100))) :: [])
+renderPoint = Model.grid |> Task.map(List.map(generateCircle)) |> Task.map(\x -> foo :: x)
 
 --7x9
 renderWell model = model
@@ -87,7 +89,6 @@ update msg model =
             ( [], Cmd.none )
 
 -- MAIN
-
 
 main : Program Never
 main =
